@@ -1,0 +1,3 @@
+# Project `pyutil`
+
+Python utilities.
