@@ -6,12 +6,14 @@ if module_root not in sys.path:
     sys.path.insert(0, module_root)
 
 from .IOUtils import IOUtils
+from .BashUtils import BashUtils
 from .Stream import Stream
 
 __all__ = [
     "IOUtils",
     "CliUtils",
     "MiscUtils",
+    "BashUtils",
 
     "Stream",
 ]
