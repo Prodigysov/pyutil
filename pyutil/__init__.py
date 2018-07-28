@@ -7,13 +7,15 @@ if module_root not in sys.path:
 
 from .IOUtils import IOUtils
 from .BashUtils import BashUtils
+from .LoggingUtils import LoggingUtils
 from .Stream import Stream
 
 __all__ = [
-    "IOUtils",
-    "CliUtils",
-    "MiscUtils",
     "BashUtils",
+    "CliUtils",
+    "IOUtils",
+    "LoggingUtils",
+    "MiscUtils",
 
     "Stream",
 ]
