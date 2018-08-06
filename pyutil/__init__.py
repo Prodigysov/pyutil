@@ -18,4 +18,6 @@ __all__ = [
     "MiscUtils",
 
     "Stream",
+
+    "latex",
 ]
