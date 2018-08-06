@@ -5,8 +5,8 @@ from typing import *
 
 class LoggingUtils:
 
-    logging_format = "[%(relativeCreated)6d|%(levelname)7s]%(name)s: %(message)s [@%(filename)s:%(lineno)d|%(funcName)s]"
-    logging_format_detail = "[%(asctime)s|%(relativeCreated)6d|%(levelname)7s]%(name)s: %(message)s [@%(filename)s:%(lineno)d|%(funcName)s|pid %(process)d|tid %(thread)d]"
+    logging_format = "[{relativeCreated:6.0f}{levelname[0]}]{name}: {message}"
+    logging_format_detail = "[{asctime}|{relativeCreated:.3f}|{levelname:7}]{name}: {message} [@{filename}:{lineno}|{funcName}|pid {process}|tid {thread}]"
 
     # Copied from logging
     DEBUG = logging.DEBUG
@@ -19,14 +19,14 @@ class LoggingUtils:
     def get_handler_console(cls, stream=sys.stderr, level=logging.WARNING) -> logging.Handler:
         handler = logging.StreamHandler(stream=stream)
         handler.setLevel(level=level)
-        handler.setFormatter(logging.Formatter(cls.logging_format))
+        handler.setFormatter(logging.Formatter(cls.logging_format, style="{"))
         return handler
 
     @classmethod
     def get_handler_file(cls, filename, level=logging.DEBUG) -> logging.Handler:
         handler = logging.FileHandler(filename)
         handler.setLevel(level=level)
-        handler.setFormatter(logging.Formatter(cls.logging_format_detail))
+        handler.setFormatter(logging.Formatter(cls.logging_format_detail, style="{"))
         return handler
 
     default_level = logging.WARNING
@@ -34,7 +34,7 @@ class LoggingUtils:
 
     @classmethod
     def setup(cls, level=logging.WARNING, filename: str = None):
-        logging.basicConfig(level=level, format=cls.logging_format)
+        logging.basicConfig(level=level, format=cls.logging_format, style="{")
 
         cls.default_level = level
         cls.default_handlers.clear()
