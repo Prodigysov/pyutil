@@ -13,10 +13,13 @@ class File:
         if self.is_append:
             if os.path.isfile(path):
                 self.content = IOUtils.load(path, "txt")
-        # end if, if
+        # end ifl, if
 
-    def append(self, line: str) -> "File":
-        self.content += line + "\n"
+    def append(self, line: str, is_line_end: bool = True) -> "File":
+        self.content += line
+        if is_line_end:
+            self.content += "\n"
+        # end if
         return self
 
     def append_comment(self, line: str) -> "File":
