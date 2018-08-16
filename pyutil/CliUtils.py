@@ -111,6 +111,7 @@ def main(argv, actions: Dict[str, Callable], normalize_options: Callable[[Dict],
     if action in actions:
         actions[action](**options)
     else:
-        print("No such action {action}".format(**locals()))
+        print("No such action {}".format(action))
+        print("Available actions: {}".format(list(actions.keys())))
 
     return
