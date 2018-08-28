@@ -8,6 +8,7 @@ if module_root not in sys.path:
 from .IOUtils import IOUtils
 from .BashUtils import BashUtils
 from .LoggingUtils import LoggingUtils
+from .GitHubUtils import GitHubUtils
 from .Stream import Stream
 
 __all__ = [
@@ -15,6 +16,7 @@ __all__ = [
     "CliUtils",
     "IOUtils",
     "LoggingUtils",
+    "GitHubUtils",
     "MiscUtils",
 
     "Stream",
