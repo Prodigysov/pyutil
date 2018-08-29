@@ -3,6 +3,7 @@ from pyutil import LoggingUtils
 from datetime import datetime
 from time import sleep
 import traceback
+from . import _config
 
 from typing import *
 
@@ -12,7 +13,7 @@ class GitHubUtils:
     logger = LoggingUtils.get_logger("GitHubUtils")
 
     GITHUB_SEARCH_ITEMS_MAX = 1000
-    DEFAULT_ACCESS_TOKEN = "93e7bf061b52c1a8d1511289cc02085878a95b08"  # prodigysov-work:pyutil
+    DEFAULT_ACCESS_TOKEN = _config.get_config("github_access_token")
     DEFAULT_GITHUB_OBJECT = Github(DEFAULT_ACCESS_TOKEN)
 
     @classmethod

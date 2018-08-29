@@ -2,6 +2,9 @@
 *~
 \#*\#
 
+# Config File
+/config.json
+
 # IDE
 **/.idea/
 
