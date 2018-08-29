@@ -4,9 +4,10 @@ from typing import *
 
 
 class Macros:
+    HOME_DIR = os.getenv("HOME")
     THIS_DIR = os.path.dirname(os.path.realpath(__file__))
     PROJ_DIR = os.path.dirname(THIS_DIR)
-    CONFIG_FILE = os.path.join(PROJ_DIR, "config.json")
+    CONFIG_FILE = os.path.join(HOME_DIR, "pyutil_config.json")
 
 
 def get_config(key: str) -> any:
