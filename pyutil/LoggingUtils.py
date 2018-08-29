@@ -42,18 +42,21 @@ class LoggingUtils:
         if filename is not None:
             cls.default_level = logging.DEBUG
             cls.default_handlers.append(cls.get_handler_file(filename=filename))
+        # end if
+        cls.refresh_loggers()
         return
+
+    loggers = list()
 
     @classmethod
     def get_logger(cls, name: str,
-                   level: int = None,
-                   handlers: Iterable[logging.Handler] = None) -> logging.Logger:
+                   level: int = None) -> logging.Logger:
         if level is None:
             level = cls.default_level
         # end if
-        if handlers is None:
-            handlers = cls.default_handlers
-        # end if
+
+        # Always use the same handlers
+        handlers = cls.default_handlers
 
         logger = logging.getLogger(name)
         logger.setLevel(level)
@@ -62,4 +65,19 @@ class LoggingUtils:
         for handler in handlers:
             logger.addHandler(handler)
         # end for
+        cls.loggers.append(logger)
         return logger
+
+    @classmethod
+    def refresh_loggers(cls):
+        """
+        Refresh all the loggers to use the default handlers.
+        """
+        handlers = cls.default_handlers
+        for logger in cls.loggers:
+            logger.handlers = []
+            for handler in handlers:
+                logger.addHandler(handler)
+            # end for
+        # end for
+        return
