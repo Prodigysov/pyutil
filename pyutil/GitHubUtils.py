@@ -155,9 +155,9 @@ class GitHubUtils:
         if strategy in strategies:
             cls.logger.info("Using strategy {}".format(strategy))
             s_users = set()
-            s_users = s_users.union(cls.search_repos("language:{}".format(language), sort="repositories", is_wait_rate_limit=is_wait_rate_limit))
-            s_users = s_users.union(cls.search_repos("language:{}".format(language), sort="followers", is_wait_rate_limit=is_wait_rate_limit))
-            s_users = s_users.union(cls.search_repos("language:{}".format(language), sort="joined", is_wait_rate_limit=is_wait_rate_limit))
+            s_users = s_users.union(cls.search_users("language:{}".format(language), sort="repositories", is_wait_rate_limit=is_wait_rate_limit))
+            s_users = s_users.union(cls.search_users("language:{}".format(language), sort="followers", is_wait_rate_limit=is_wait_rate_limit))
+            s_users = s_users.union(cls.search_users("language:{}".format(language), sort="joined", is_wait_rate_limit=is_wait_rate_limit))
             for user in s_users:
                 l_repos = cls.search_repos("language:{}+user:{}".format(language, user), is_allow_fork=is_allow_fork, is_wait_rate_limit=is_wait_rate_limit)
                 s_repos = s_repos.union(l_repos)
