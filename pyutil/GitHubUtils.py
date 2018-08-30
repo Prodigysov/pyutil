@@ -47,6 +47,7 @@ class GitHubUtils:
             # Check rate limit
             rate_limit_remain, rate_limit = self.github.rate_limiting
             if rate_limit_remain <= 1:
+                self.logger.debug("Rate limit {} / {}".format(rate_limit_remain, rate_limit))
                 rate_limit_reset_time = datetime.fromtimestamp(self.github.rate_limiting_resettime)
                 rate_limit_wait_seconds = math.ceil((rate_limit_reset_time - datetime.now()).total_seconds()) + 1
                 if rate_limit_wait_seconds > 0:
