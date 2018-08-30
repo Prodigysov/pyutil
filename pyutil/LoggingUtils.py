@@ -29,7 +29,7 @@ class LoggingUtils:
         handler.setFormatter(logging.Formatter(cls.logging_format_detail, style="{"))
         return handler
 
-    default_level = logging.DEBUG
+    default_level = logging.WARNING
     default_handlers = list()
 
     @classmethod

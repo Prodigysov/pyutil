@@ -14,7 +14,7 @@ from typing import *
 
 class GitHubUtils:
 
-    logger = LoggingUtils.get_logger("GitHubUtils")
+    logger = LoggingUtils.get_logger("GitHubUtils", LoggingUtils.DEBUG)
 
     GITHUB_SEARCH_ITEMS_MAX = 1000
     DEFAULT_ACCESS_TOKEN = _config.get_config("github_access_token")
