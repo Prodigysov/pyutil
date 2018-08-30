@@ -3,6 +3,7 @@ import math
 from github import Github, RateLimitExceededException
 from github.Repository import Repository
 from github.NamedUser import NamedUser
+from github.GithubException import GithubException
 from pyutil import LoggingUtils
 from datetime import datetime
 from time import sleep
@@ -202,7 +203,12 @@ class GitHubUtils:
                 s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="followers", is_wait_rate_limit=is_wait_rate_limit)])
                 s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="joined", is_wait_rate_limit=is_wait_rate_limit)])
                 for user in s_users:
-                    new_repos = cls.search_repos("language:{} user:{}".format(language, user), is_allow_fork=is_allow_fork, is_wait_rate_limit=is_wait_rate_limit)
+                    try:
+                        new_repos = cls.search_repos("language:{} user:{}".format(language, user), is_allow_fork=is_allow_fork, is_wait_rate_limit=is_wait_rate_limit)
+                    except GithubException as e:
+                        cls.logger.warning("Cannot get the repos of user {}".format(user))
+                        continue
+                    # end try
                     for repo in new_repos:
                         names_repos[repo.full_name] = repo
                     # end for
