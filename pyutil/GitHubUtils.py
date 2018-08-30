@@ -1,4 +1,8 @@
+import math
+
 from github import Github, RateLimitExceededException
+from github.Repository import Repository
+from github.NamedUser import NamedUser
 from pyutil import LoggingUtils
 from datetime import datetime
 from time import sleep
@@ -23,54 +27,87 @@ class GitHubUtils:
         else:
             return Github(access_token)
 
+    class wait_rate_limit:
+        """
+        Wait for rate limit of the github accessor. For use with "with".
+        Use the default github accessor if no argument is given.
+        """
+        DEFAULT_GITHUB_OBJECT = None
+        logger = None
+
+        def __init__(self, github: Github = DEFAULT_GITHUB_OBJECT):
+            self.github = github
+            return
+
+        def __enter__(self):
+            if self.github is None:
+                self.github = self.DEFAULT_GITHUB_OBJECT
+            # end if
+
+            # Check rate limit
+            rate_limit_remain, rate_limit = self.github.rate_limiting
+            if rate_limit_remain <= 1:
+                rate_limit_reset_time = datetime.fromtimestamp(self.github.rate_limiting_resettime)
+                rate_limit_wait_seconds = math.ceil((rate_limit_reset_time - datetime.now()).total_seconds()) + 1
+                if rate_limit_wait_seconds > 0:
+                    self.logger.warning("Rate limit will recover at: {}, will wait for {} seconds.".format(rate_limit_reset_time, rate_limit_wait_seconds))
+                    sleep(rate_limit_wait_seconds)
+                    self.logger.warning("Rate limit recovered")
+                # end if
+            return self.github
+
+        def __exit__(self, type, value, tb):
+            return
+    # end class
+    wait_rate_limit.DEFAULT_GITHUB_OBJECT = DEFAULT_GITHUB_OBJECT
+    wait_rate_limit.logger = logger
+
     @classmethod
     def search_repos(cls, q: str = "", sort: str = "stars", order: str = "desc",
                      is_allow_fork: bool = False,
                      max_num_repos: int = GITHUB_SEARCH_ITEMS_MAX,
                      github: Github = DEFAULT_GITHUB_OBJECT,
                      is_wait_rate_limit: bool = True,
-                     *_, **qualifiers) -> List[str]:
+                     *_, **qualifiers) -> List[Repository]:
         """
         Searches the repos by querying GitHub API v3.
         :return: a list of full names of the repos match the query.
         """
-        num_repos = 0
         repos = list()
-        iterator_repos = github.search_repositories(q, sort, order, **qualifiers)
-        while True:
-            try:
-                repo = next(iterator_repos)
-            except StopIteration:
-                cls.logger.info("Reached the end of iteration.")
-                break
-            except RateLimitExceededException as e:
-                cls.logger.warning("Reached rate limit: {}".format(str(e)))
-                if not is_wait_rate_limit:
-                    cls.logger.warning("Not waiting for rate limit.")
+        num_repos = 0
+        try:
+            for repo in github.search_repositories(q, sort, order, **qualifiers):
+                if is_wait_rate_limit:
+                    with cls.wait_rate_limit(github):
+                        pass
+                # end if, with
+
+                # Check fork
+                if not is_allow_fork:
+                    if repo.fork:
+                        continue
+                # end if, if
+
+                repos.append(repo)
+                num_repos += 1
+
+                # Check number
+                if num_repos >= max_num_repos:
                     break
-                else:
-                    rate_limit_reset_time = datetime.fromtimestamp(github.rate_limiting_resettime)
-                    rate_limit_wait_seconds = (rate_limit_reset_time - datetime.now()).total_seconds() + 1
-                    cls.logger.warning("Rate limit will recover at: {}, will wait for {} seconds.".format(rate_limit_reset_time, rate_limit_wait_seconds))
-                    sleep(rate_limit_wait_seconds)
-                    cls.logger.warning("Rate limit recovered")
-                    continue
                 # end if
-            except:
-                cls.logger.warning("Unknown exception: {}".format(traceback.format_exc()))
-                cls.logger.warning("Returning partial results.")
-                break
-            # end try except
-            if not is_allow_fork:
-                if repo.fork:
-                    continue
-            # end if, if
-            repos.append(repo.full_name)
-            num_repos += 1
-            if num_repos >= max_num_repos:
-                break
-            # end if
-        # end for
+            # end for
+        except RateLimitExceededException as e:
+            cls.logger.warning("Reached rate limit: {}".format(str(e)))
+            cls.logger.warning("Returning partial results.")
+        except:
+            cls.logger.warning("Unknown exception: {}".format(traceback.format_exc()))
+            raise
+        # end try except
+
+        if num_repos < max_num_repos:
+            cls.logger.warning("Got {}/{} repos".format(num_repos, max_num_repos))
+        # end if
+
         return repos
 
     @classmethod
@@ -78,51 +115,47 @@ class GitHubUtils:
                      max_num_users: int = GITHUB_SEARCH_ITEMS_MAX,
                      github: Github = DEFAULT_GITHUB_OBJECT,
                      is_wait_rate_limit: bool = True,
-                     *_, **qualifiers) -> List[str]:
+                     *_, **qualifiers) -> List[NamedUser]:
         """
         Searches the users by querying GitHub API v3.
         :return: a list of usernames (login) of the users match the query.
         """
-        num_users = 0
         users = list()
-        iterator_users = github.search_users(q, sort, order, **qualifiers)
-        while True:
-            try:
-                user = next(iterator_users)
-            except StopIteration:
-                cls.logger.info("Reached the end of iteration.")
-                break
-            except RateLimitExceededException as e:
-                cls.logger.warning("Reached rate limit: {}".format(str(e)))
-                if not is_wait_rate_limit:
-                    cls.logger.warning("Not waiting for rate limit.")
+        num_users = 0
+        try:
+            for user in github.search_users(q, sort, order, **qualifiers):
+                if is_wait_rate_limit:
+                    with cls.wait_rate_limit(github):
+                        pass
+                # end if, with
+
+                users.append(user)
+                num_users += 1
+
+                # Check number
+                if num_users >= max_num_users:
                     break
-                else:
-                    rate_limit_reset_time = datetime.fromtimestamp(github.rate_limiting_resettime)
-                    rate_limit_wait_seconds = (rate_limit_reset_time - datetime.now()).total_seconds() + 1
-                    cls.logger.warning("Rate limit will recover at: {}, will wait for {} seconds.".format(rate_limit_reset_time, rate_limit_wait_seconds))
-                    sleep(rate_limit_wait_seconds)
-                    cls.logger.warning("Rate limit recovered")
-                    continue
                 # end if
-            except:
-                cls.logger.warning("Unknown exception: {}".format(traceback.format_exc()))
-                cls.logger.warning("Returning partial results.")
-                break
-            # end try except
-            users.append(user.login)
-            num_users += 1
-            if num_users >= max_num_users:
-                break
-            # end if
-        # end for
+            # end for
+        except RateLimitExceededException as e:
+            cls.logger.warning("Reached rate limit: {}".format(str(e)))
+            cls.logger.warning("Returning partial results.")
+        except:
+            cls.logger.warning("Unknown exception: {}".format(traceback.format_exc()))
+            raise
+        # end try except
+
+        if num_users < max_num_users:
+            cls.logger.warning("Got {}/{} users".format(num_users, max_num_users))
+        # end if
+
         return users
 
     @classmethod
     def search_repos_of_language(cls, language: str, max_num_repos: int = float("inf"),
                                  is_allow_fork: bool = False,
                                  is_wait_rate_limit: bool = True,
-                                 strategies: List[str] = None) -> List[str]:
+                                 strategies: List[str] = None) -> List[Repository]:
         """
         Searches for all the repos of the language.
         :return: a list of full names of matching repos.
@@ -137,42 +170,49 @@ class GitHubUtils:
             assert strategy in supported_strategies, strategy
         # end for
 
-        s_repos = set()
+        names_repos = dict()
 
-        # Strategy 1: search repos (limited to 1000)
-        strategy = "search_repos"
-        if strategy in strategies:
-            cls.logger.info("Using strategy {}".format(strategy))
-            l_repos = cls.search_repos("language:{}".format(language), is_allow_fork=is_allow_fork, is_wait_rate_limit=is_wait_rate_limit, max_num_repos=max_num_repos)
-            s_repos = s_repos.union(l_repos)
-            if len(s_repos) >= max_num_repos:
-                return list(s_repos)
-            # end if
-        # end if
-
-        # Strategy 2: search users (~37000?)
-        strategy = "search_users"
-        if strategy in strategies:
-            cls.logger.info("Using strategy {}".format(strategy))
-            s_users = set()
-            s_users = s_users.union(cls.search_users("language:{}".format(language), sort="repositories", is_wait_rate_limit=is_wait_rate_limit))
-            s_users = s_users.union(cls.search_users("language:{}".format(language), sort="followers", is_wait_rate_limit=is_wait_rate_limit))
-            s_users = s_users.union(cls.search_users("language:{}".format(language), sort="joined", is_wait_rate_limit=is_wait_rate_limit))
-            for user in s_users:
-                l_repos = cls.search_repos("language:{}+user:{}".format(language, user), is_allow_fork=is_allow_fork, is_wait_rate_limit=is_wait_rate_limit)
-                s_repos = s_repos.union(l_repos)
-                if len(s_repos) >= max_num_repos:
-                    return list(s_repos)
+        try:
+            # Strategy 1: search repos (limited to 1000)
+            strategy = "search_repos"
+            if strategy in strategies:
+                cls.logger.info("Using strategy {}".format(strategy))
+                new_repos = cls.search_repos("language:{}".format(language), is_allow_fork=is_allow_fork, is_wait_rate_limit=is_wait_rate_limit, max_num_repos=max_num_repos)
+                for repo in new_repos:
+                    names_repos[repo.full_name] = repo
+                # end for
+                if len(names_repos) >= max_num_repos:
+                    return list(names_repos.values())
                 # end if
-            # end for
-        # end if
+            # end if
 
-        # Strategy 3: enum users (?)
-        strategy = "enum_users"
-        if strategy in strategies:
-            cls.logger.warning("Strategy {} is not implemented yet.".format(strategy))
-            cls.logger.warning("Nothing happens.")
-        # end if
+            # Strategy 2: search users (~37000?)
+            strategy = "search_users"
+            if strategy in strategies:
+                cls.logger.info("Using strategy {}".format(strategy))
+                s_users = set()
+                s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="repositories", is_wait_rate_limit=is_wait_rate_limit)])
+                s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="followers", is_wait_rate_limit=is_wait_rate_limit)])
+                s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="joined", is_wait_rate_limit=is_wait_rate_limit)])
+                for user in s_users:
+                    new_repos = cls.search_repos("language:{}+user:{}".format(language, user), is_allow_fork=is_allow_fork, is_wait_rate_limit=is_wait_rate_limit)
+                    for repo in new_repos:
+                        names_repos[repo.full_name] = repo
+                    # end for
+                    if len(names_repos) >= max_num_repos:
+                        return list(names_repos.values())
+                    # end if
+                # end for
+            # end if
 
-        cls.logger.warning("Got {}/{} repos.".format(len(s_repos), max_num_repos))
-        return list(s_repos)
+            # Strategy 3: enum users (?)
+            strategy = "enum_users"
+            if strategy in strategies:
+                cls.logger.warning("Strategy {} is not implemented yet.".format(strategy))
+                cls.logger.warning("Nothing happens.")
+            # end if
+        except KeyboardInterrupt as e:
+            cls.logger.warning("Interrupted. Returning partial results.")
+        finally:
+            cls.logger.warning("Got {}/{} repos.".format(len(names_repos), max_num_repos))
+            return list(names_repos.values())
