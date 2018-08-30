@@ -29,11 +29,11 @@ class LoggingUtils:
         handler.setFormatter(logging.Formatter(cls.logging_format_detail, style="{"))
         return handler
 
-    default_level = logging.WARNING
+    default_level = logging.DEBUG
     default_handlers = list()
 
     @classmethod
-    def setup(cls, level=logging.WARNING, filename: str = None):
+    def setup(cls, level=logging.DEBUG, filename: str = None):
         logging.basicConfig(level=level, format=cls.logging_format, style="{")
 
         cls.default_level = level

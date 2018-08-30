@@ -73,6 +73,7 @@ class GitHubUtils:
         Searches the repos by querying GitHub API v3.
         :return: a list of full names of the repos match the query.
         """
+        cls.logger.debug("Search for repos with query {}, sort {}, order {}".format(q, sort, order))
         repos = list()
         num_repos = 0
         try:
@@ -106,6 +107,8 @@ class GitHubUtils:
 
         if num_repos < max_num_repos:
             cls.logger.warning("Got {}/{} repos".format(num_repos, max_num_repos))
+        else:
+            cls.logger.info("Got {}/{} repos".format(num_repos, max_num_repos))
         # end if
 
         return repos
@@ -120,6 +123,7 @@ class GitHubUtils:
         Searches the users by querying GitHub API v3.
         :return: a list of usernames (login) of the users match the query.
         """
+        cls.logger.debug("Search for users with query {}, sort {}, order {}".format(q, sort, order))
         users = list()
         num_users = 0
         try:
@@ -147,6 +151,8 @@ class GitHubUtils:
 
         if num_users < max_num_users:
             cls.logger.warning("Got {}/{} users".format(num_users, max_num_users))
+        else:
+            cls.logger.info("Got {}/{} users".format(num_users, max_num_users))
         # end if
 
         return users
