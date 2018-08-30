@@ -33,7 +33,7 @@ class LoggingUtils:
     default_handlers = list()
 
     @classmethod
-    def setup(cls, level=logging.DEBUG, filename: str = None):
+    def setup(cls, level=logging.WARNING, filename: str = None):
         logging.basicConfig(level=level, format=cls.logging_format, style="{")
 
         cls.default_level = level
