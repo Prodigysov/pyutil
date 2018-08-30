@@ -189,6 +189,7 @@ class GitHubUtils:
                 for repo in new_repos:
                     names_repos[repo.full_name] = repo
                 # end for
+                cls.logger.warning("Progress {}/{} repos.".format(len(names_repos), max_num_repos))
                 if len(names_repos) >= max_num_repos:
                     return list(names_repos.values())
                 # end if
@@ -212,6 +213,7 @@ class GitHubUtils:
                     for repo in new_repos:
                         names_repos[repo.full_name] = repo
                     # end for
+                    cls.logger.warning("Progress {}/{} repos.".format(len(names_repos), max_num_repos))
                     if len(names_repos) >= max_num_repos:
                         return list(names_repos.values())
                     # end if
