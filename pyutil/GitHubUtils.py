@@ -202,7 +202,7 @@ class GitHubUtils:
                 s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="followers", is_wait_rate_limit=is_wait_rate_limit)])
                 s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="joined", is_wait_rate_limit=is_wait_rate_limit)])
                 for user in s_users:
-                    new_repos = cls.search_repos("language:{}+user:{}".format(language, user), is_allow_fork=is_allow_fork, is_wait_rate_limit=is_wait_rate_limit)
+                    new_repos = cls.search_repos("language:{} user:{}".format(language, user), is_allow_fork=is_allow_fork, is_wait_rate_limit=is_wait_rate_limit)
                     for repo in new_repos:
                         names_repos[repo.full_name] = repo
                     # end for
