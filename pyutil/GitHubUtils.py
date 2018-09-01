@@ -19,7 +19,7 @@ class GitHubUtils:
 
     GITHUB_SEARCH_ITEMS_MAX = 1000
     DEFAULT_ACCESS_TOKEN = _config.get_config("github_access_token")
-    DEFAULT_GITHUB_OBJECT = Github(DEFAULT_ACCESS_TOKEN)
+    DEFAULT_GITHUB_OBJECT = Github(DEFAULT_ACCESS_TOKEN, per_page=100)
 
     @classmethod
     def get_github(cls, access_token: str = None) -> Github:
