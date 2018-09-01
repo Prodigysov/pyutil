@@ -17,14 +17,8 @@ class test_GitHubUtils(unittest.TestCase):
         self.assertTrue(len(test_repos_2) > 0)
 
         # Query separator "+" will not work
-        try:
-            test_repos_3 = GitHubUtils.search_repos("user:{}+language:Java".format(test_user))
-        except GithubException as e:
-            # Good
-            pass
-        else:
-            self.fail()
-        # end try
+        test_repos_3 = GitHubUtils.search_repos("user:{}+language:Java".format(test_user), max_retry_times=0)
+        self.assertTrue(len(test_repos_3) == 0)
 
 
 if __name__ == '__main__':
