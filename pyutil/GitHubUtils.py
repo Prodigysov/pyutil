@@ -75,17 +75,21 @@ class GitHubUtils:
                 with cls.wait_rate_limit(github) as g:
                     return call(g)
                 # end with
-            except (GithubException, RateLimitExceededException):
-                cls.logger.warning("Unexpected exception during api call: {}".format(traceback.format_exc()))
-                retry_times += 1
-                if retry_times > max_retry_times:
-                    cls.logger.warning("Exceeding max retry times {}".format(max_retry_times))
+            except (GithubException, RateLimitExceededException) as e:
+                if e.status == 422:
+                    cls.logger.warning("Validation Error. Will not retry.")
                     raise
-                # end if
+                else:
+                    cls.logger.warning("Unexpected exception during api call: {}".format(traceback.format_exc()))
+                    retry_times += 1
+                    if retry_times > max_retry_times:
+                        cls.logger.warning("Exceeding max retry times {}".format(max_retry_times))
+                        raise
+                    # end if
 
-                retry_wait_time = min(retry_times * 30, 600)
-                cls.logger.warning("Will wait {} seconds before retry {}".format(retry_wait_time, retry_times))
-                sleep(retry_wait_time)
+                    retry_wait_time = min(retry_times * 30, 600)
+                    cls.logger.warning("Will wait {} seconds before retry {}".format(retry_wait_time, retry_times))
+                    sleep(retry_wait_time)
             # end try
         # end while
 
@@ -224,6 +228,8 @@ class GitHubUtils:
                 s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="repositories", max_retry_times=max_retry_times)])
                 s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="followers", max_retry_times=max_retry_times)])
                 s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="joined", max_retry_times=max_retry_times)])
+                users_count = 0
+                total_users_count = len(s_users)
                 for user in s_users:
                     try:
                         new_repos = cls.search_repos("language:{} user:{}".format(language, user), is_allow_fork=is_allow_fork, max_retry_times=max_retry_times)
@@ -234,7 +240,8 @@ class GitHubUtils:
                     for repo in new_repos:
                         names_repos[repo.full_name] = repo
                     # end for
-                    cls.logger.warning("Progress {}/{} repos.".format(len(names_repos), max_num_repos))
+                    users_count += 1
+                    cls.logger.warning("Progress {}/{} repos, {}/{} users.".format(len(names_repos), max_num_repos, users_count, total_users_count))
                     if len(names_repos) >= max_num_repos:
                         return list(names_repos.values())
                     # end if
