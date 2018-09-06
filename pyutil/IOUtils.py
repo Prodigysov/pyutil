@@ -4,6 +4,7 @@ import pickle as pkl
 import json
 import yaml
 from collections import defaultdict
+from pathlib import Path
 from typing import *
 
 
@@ -15,10 +16,42 @@ class IOUtils:
     # ----------
     # Directory operations
 
+    class cd:
+        """
+        Change directory. Usage:
+
+        with IOUtils.cd(path):
+            <statements>
+        # end with
+
+        Using a string path is supported for backward compatibility.
+        Using pathlib.Path should be preferred.
+        """
+
+        def __init__(self, path: Union[str, Path]):
+            if isinstance(path, str):
+                path = Path(path)
+            # end if
+            self.path = path  # Path
+            self.old_path = Path.cwd()  # Path
+            return
+
+        def __enter__(self):
+            os.chdir(self.path)
+            return
+
+        def __exit__(self, type, value, tb):
+            os.chdir(self.old_path)
+            return
+
+    # Deprecated
+    # Use pathlib.Path.is_dir() instead
     @classmethod
     def has_dir(cls, dirname) -> bool:
         return os.path.isdir(dirname)
 
+    # Deprecated
+    # Use pathlib.Path.mkdir() instead
     @classmethod
     def mk_dir(cls, dirname, mode=0o777,
                is_remove_if_exists: bool = False,
@@ -47,6 +80,8 @@ class IOUtils:
         os.mkdir(dirname, mode)
         return
 
+    # Deprecated
+    # Use shutil.rmtree() instead
     @classmethod
     def rm_dir(cls, dirname,
                is_ok_if_not_exists: bool = True):
@@ -64,24 +99,6 @@ class IOUtils:
                 raise FileNotFoundError("Trying to remove non-exist directory {}".format(dirname))
         # end if
         return
-
-    class cd:
-        """
-        Change directory. For use with "with".
-        """
-
-        def __init__(self, directory):
-            self.directory = directory
-            self.old_directory = os.getcwd()
-            return
-
-        def __enter__(self):
-            os.chdir(self.directory)
-            return
-
-        def __exit__(self, type, value, tb):
-            os.chdir(self.old_directory)
-            return
 
     # ----------
     # File operations
