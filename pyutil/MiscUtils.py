@@ -18,7 +18,8 @@ def shuffle_data(items: Sequence[T]) -> Sequence[T]:
 
 
 def get_num_params(vocab_size, num_layers, num_neurons):
-    """Returns the number of trainable parameters of an LSTM.
+    """
+    Returns the number of trainable parameters of an LSTM.
 
     Args:
         vocab_size (int): The vocabulary size
@@ -33,3 +34,37 @@ def get_num_params(vocab_size, num_layers, num_neurons):
     num_softmax = vocab_size * num_neurons + vocab_size
 
     return num_first_layer + (num_layers - 1) * num_other_layer + num_softmax
+
+
+def iter_len(iterator: Iterable) -> int:
+    """
+    Counts the length with the iterator.
+    """
+    return sum(1 for _ in iterator)
+
+
+# Human-readable numbers
+
+POWERS = [10 ** x for x in (3, 6, 9, 12, 15, 18, 21, 24)]
+HUMAN_READABLE_POWERS = ('K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp')
+
+
+def itos_human_readable(value: int, precision: int = 1) -> str:
+    """
+    Converts a large integer to a human-readable string representation.
+    :return the human-readable string representation of the int.
+    :raises TypeError if the value passed was unable to be coaxed into int.
+    """
+    try:
+        value = int(value)
+    except (TypeError, ValueError) as e:
+        raise TypeError("Value can not be converted to int: {}".format(value))
+
+    if value < POWERS[0]:
+        return str(value)
+    for ordinal, power in enumerate(POWERS[1:], 1):
+        if value < power:
+            chopped = value / float(POWERS[ordinal - 1])
+            fmt = "{0:." + str(precision) + "f}"
+            return fmt.format(chopped).rstrip("0").rstrip(".") + HUMAN_READABLE_POWERS[ordinal - 1]
+    return str(value)
