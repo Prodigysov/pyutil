@@ -4,7 +4,7 @@ from github import Github, RateLimitExceededException
 from github.NamedUser import NamedUser
 from github.GithubException import GithubException
 from github.Repository import Repository
-from pyutil import LoggingUtils
+from .LoggingUtils import LoggingUtils
 from datetime import datetime
 from time import sleep
 import traceback
