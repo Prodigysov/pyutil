@@ -120,21 +120,28 @@ class IOUtils:
     IO_FORMATS["json_min"]["loadf"] = lambda f: json.load(f)
 
     @classmethod
-    def dump(cls, file_name: str, obj: object, fmt: str = "json", directory: str = os.path.curdir):
+    def dump(cls, file_path: Union[str, Path], obj: object, fmt: str = "json"):
+        if isinstance(file_path, str):
+            file_path = Path(file_path)
+        # end if
+        file_path.touch(exist_ok=True)
+
         conf = cls.IO_FORMATS[fmt]
 
-        cls.mk_dir(directory)
-        with open(os.path.join(directory, file_name), "w" + conf["mode"]) as f:
+        with open(file_path, "w" + conf["mode"]) as f:
             conf["dumpf"](obj, f)
 
         return
 
     @classmethod
-    def load(cls, file_name: str, fmt: str = "json", directory: str = os.path.curdir) -> object:
+    def load(cls, file_path: Union[str, Path], fmt: str = "json") -> object:
+        if isinstance(file_path, str):
+            file_path = Path(file_path)
+        # end if
+
         conf = cls.IO_FORMATS[fmt]
 
-        cls.mk_dir(directory)
-        with open(os.path.join(directory, file_name), "r" + conf["mode"]) as f:
+        with open(file_path, "r" + conf["mode"]) as f:
             obj = conf["loadf"](f)
 
         return obj
