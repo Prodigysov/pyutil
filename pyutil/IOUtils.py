@@ -183,7 +183,9 @@ class IOUtils:
            should have the name {@link IOUtils#JSONFY_ATTR_FIELD_NAME};
         3. cast to a string.
         """
-        if isinstance(obj, list):
+        if isinstance(obj, int) or isinstance(obj, float) or isinstance(obj, str):
+            return obj
+        elif isinstance(obj, list):
             return [cls.jsonfy(item) for item in obj]
         elif isinstance(obj, dict):
             return {k: cls.jsonfy(v) for k, v in obj.items()}
@@ -191,8 +193,6 @@ class IOUtils:
             return getattr(obj, cls.JSONFY_FUNC_NAME)()
         elif hasattr(obj, cls.JSONFY_ATTR_FIELD_NAME):
             return {attr: cls.jsonfy(getattr(obj, attr)) for attr in getattr(obj, cls.JSONFY_ATTR_FIELD_NAME).keys()}
-        elif isinstance(obj, int) or isinstance(obj, float) or isinstance(obj, str):
-            return obj
         else:
             return repr(obj)
 
