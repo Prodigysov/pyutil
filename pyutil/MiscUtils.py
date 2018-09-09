@@ -68,3 +68,9 @@ def itos_human_readable(value: int, precision: int = 1) -> str:
             fmt = "{0:." + str(precision) + "f}"
             return fmt.format(chopped).rstrip("0").rstrip(".") + HUMAN_READABLE_POWERS[ordinal - 1]
     return str(value)
+
+
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
