@@ -1,3 +1,4 @@
+from pathlib import Path
 import numpy as np
 import random
 import subprocess
@@ -20,26 +21,39 @@ class Stream:
         Get a new stream from the item / items.
         :param one_or_more_items: is converted to list with builtin `list` function.
         """
-        dataset = Stream()
+        stream = Stream()
         if one_or_more_items is not None:
-            dataset.items = list(one_or_more_items)
+            stream.items = list(one_or_more_items)
         # end if, if
-        return dataset
+        return stream
 
     @classmethod
-    def from_directory(cls, dir_name: str):
+    def of_files(cls, dir_path: Union[str, Path]):
         """
         Get a stream of the files under the directory.
-        TODO support file_attr function.
         """
-        with IOUtils.cd(dir_name):
-            find_files_cmd = "find -type f"
-            files = subprocess.run(["bash","-c",find_files_cmd], stdout=subprocess.PIPE).stdout.decode("utf-8").split("\n")[:-1]
+        with IOUtils.cd(dir_path):
+            cmd_find = "find -mindepth 1 -maxdepth 1 -type f"
+            files = subprocess.run(["bash","-c",cmd_find], stdout=subprocess.PIPE).stdout.decode("utf-8").split("\n")[:-1]
         # end with
         files = [file[2:] for file in files]
-        dataset = cls.of(files)
-        dataset.sorted()
-        return dataset
+        stream = cls.of(files)
+        stream.sorted()
+        return stream
+
+    @classmethod
+    def of_dirs(cls, dir_path: Union[str, Path]):
+        """
+        Get a stream of the sub-directories under the directory.
+        """
+        with IOUtils.cd(dir_path):
+            cmd_find = "find -mindepth 1 -maxdepth 1 -type d"
+            dirs = subprocess.run(["bash","-c",cmd_find], stdout=subprocess.PIPE).stdout.decode("utf-8").split("\n")[:-1]
+        # end with
+        dirs = [dir[2:] for dir in dirs]
+        stream = cls.of(dirs)
+        stream.sorted()
+        return stream
 
     def filter(self, predicate_func: Callable[[object], bool]):
         """
