@@ -141,8 +141,13 @@ class IOUtils:
 
         conf = cls.IO_FORMATS[fmt]
 
-        with open(file_path, "r" + conf["mode"]) as f:
-            obj = conf["loadf"](f)
+        try:
+            with open(file_path, "r" + conf["mode"]) as f:
+                obj = conf["loadf"](f)
+            # end with
+        except FileNotFoundError as e:
+            raise FileNotFoundError(str(e) + " at {}".format(Path.cwd()))
+        # end try
 
         return obj
 
