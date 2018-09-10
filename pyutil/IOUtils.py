@@ -215,7 +215,13 @@ class IOUtils:
            should have the name {@link IOUtils#JSONFY_ATTR_FIELD_NAME};
         @see IOUtils#jsonfy
         """
-        if isinstance(data, list):
+        if isinstance(clz, str):
+            clz = globals()[clz]
+        # end if
+
+        if data is None:
+            return None
+        elif isinstance(data, list):
             return [cls.dejsonfy(item, clz) for item in data]
         elif clz is not None and hasattr(clz, cls.DEJSONFY_FUNC_NAME):
             return clz.deserialize(data)
