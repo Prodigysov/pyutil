@@ -195,7 +195,9 @@ class IOUtils:
            should have the name {@link IOUtils#JSONFY_ATTR_FIELD_NAME};
         3. cast to a string.
         """
-        if isinstance(obj, int) or isinstance(obj, float) or isinstance(obj, str):
+        if obj is None:
+            return None
+        elif isinstance(obj, int) or isinstance(obj, float) or isinstance(obj, str):
             return obj
         elif isinstance(obj, list):
             return [cls.jsonfy(item) for item in obj]
