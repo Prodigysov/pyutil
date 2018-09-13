@@ -11,11 +11,3 @@ Current utils:
 - TimeUtils: for adding time constrain on an operation;
 
 - latex package: for writing macros and tables for latex documents;
-
-
-## Development Plans
-
-- Version `0.2`:
-  
-  - Category the utils as "core" and "others", where core utils do not depend on each other (thus can be safely unit-tested).
-  - Add unit tests for at least all core utils.
