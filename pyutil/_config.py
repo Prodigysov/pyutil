@@ -19,5 +19,5 @@ def get_config(key: str) -> any:
     except KeyError as e:
         raise KeyError("Config {} not available in the config file: {}".format(key, str(e)))
     except FileNotFoundError as e:
-        raise KeyError("None config file exists: {}".format(str(e)))
+        return None
     # end try except
