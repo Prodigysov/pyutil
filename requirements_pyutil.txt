@@ -1,3 +1,0 @@
--e git://github.com/prodigysov/pyutil.git#egg=pyutil
-
-pyutil

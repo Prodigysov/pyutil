@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyutil",
-    version="0.2.5",
+    version="0.2.6",
     author="Pengyu Nie",
     author_email="prodigy.sov@gmail.com",
     description="Python utilities",
@@ -18,5 +18,5 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: POSIX :: Linux",
     ),
-    install_requires=["numpy", "PyYAML", "PyGitHub", "unidiff"]
+    install_requires=["numpy", "PyYAML", "PyGitHub", "unidiff"],
 )
