@@ -5,14 +5,14 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyutil",
-    version="0.2.4",
+    version="0.2.5",
     author="Pengyu Nie",
     author_email="prodigy.sov@gmail.com",
     description="Python utilities",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/prodigysov/pyutil",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=["tests"]),
     classifiers=(
         "Programming Language :: Python :: 3.5",
         "License :: OSI Approved :: Apache Software License",
