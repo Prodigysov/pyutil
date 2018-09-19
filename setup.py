@@ -18,5 +18,5 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: POSIX :: Linux",
     ),
-    install_requires=["numpy", "yaml", "github", "unidiff"]
+    install_requires=["numpy", "PyYAML", "PyGitHub", "unidiff"]
 )
