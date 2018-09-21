@@ -134,7 +134,7 @@ class IOUtils:
         return
 
     @classmethod
-    def load(cls, file_path: Union[str, Path], fmt: str = "json") -> object:
+    def load(cls, file_path: Union[str, Path], fmt: str = "json") -> Any:
         if isinstance(file_path, str):
             file_path = Path(file_path)
         # end if
