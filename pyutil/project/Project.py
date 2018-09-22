@@ -9,6 +9,7 @@ from .ProjectResults import ProjectResults
 class Project:
 
     logger = LoggingUtils.get_logger("project.Project")
+    logger.setLevel(LoggingUtils.INFO)
 
     DOWNLOADS_DIR = Path.cwd() / "_downloads"
     RESULTS_DIR = Path.cwd() / "_results"
