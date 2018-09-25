@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import *
 
-from pyutil import IOUtils
+from pyutil import IOUtils, Stream
 
 
 class ProjectResults:
@@ -12,14 +12,15 @@ class ProjectResults:
         return
 
     @classmethod
-    def get_project_results(cls, full_name: str, results_dir: Path = None, base_dir: Path = Path.cwd()/"_results") -> "ProjectResults":
+    def from_base_results_dir(cls, base_results_dir: Path) -> List["ProjectResults"]:
+        full_names = Stream.of_dirs(base_results_dir)
+        return [cls.get_project_results(n, base_results_dir/n) for n in full_names]
+
+    @classmethod
+    def get_project_results(cls, full_name: str, results_dir: Path) -> "ProjectResults":
         results = cls()
         results.full_name = full_name
-        if results_dir is not None:
-            results.results_dir = results_dir
-        else:
-            results.results_dir = base_dir / full_name
-        # end if
+        results.results_dir = results_dir
         return results
 
     @property
