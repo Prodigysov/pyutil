@@ -199,7 +199,7 @@ class IOUtils:
             return None
         elif isinstance(obj, int) or isinstance(obj, float) or isinstance(obj, str):
             return obj
-        elif isinstance(obj, list):
+        elif isinstance(obj, list) or isinstance(obj, set):  # TODO: support set also in dejsonfy
             return [cls.jsonfy(item) for item in obj]
         elif isinstance(obj, dict):
             return {k: cls.jsonfy(v) for k, v in obj.items()}
