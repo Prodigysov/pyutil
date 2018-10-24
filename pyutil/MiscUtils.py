@@ -66,7 +66,12 @@ def itos_human_readable(value: int, precision: int = 1) -> str:
         if value < power:
             chopped = value / float(POWERS[ordinal - 1])
             fmt = "{0:." + str(precision) + "f}"
-            return fmt.format(chopped).rstrip("0").rstrip(".") + HUMAN_READABLE_POWERS[ordinal - 1]
+
+            formatted = fmt.format(chopped)
+            if "." in formatted:
+                formatted = formatted.rstrip("0").rstrip(".")
+            # end if
+            return formatted + HUMAN_READABLE_POWERS[ordinal - 1]
     return str(value)
 
 
