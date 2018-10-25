@@ -1,16 +1,16 @@
 import math
-
-from github import Github, RateLimitExceededException
-from github.NamedUser import NamedUser
-from github.GithubException import GithubException
-from github.Repository import Repository
-from .LoggingUtils import LoggingUtils
+import traceback
 from datetime import datetime
 from time import sleep
-import traceback
-from . import _config
-
 from typing import *
+
+from github import Github, RateLimitExceededException
+from github.GithubException import GithubException
+from github.NamedUser import NamedUser
+from github.Repository import Repository
+
+from . import _config
+from .LoggingUtils import LoggingUtils
 
 
 class GitHubUtils:

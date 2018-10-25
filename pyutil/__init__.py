@@ -29,3 +29,8 @@ __all__ = [
     # Exceptions
     "TimeoutException"
 ]
+
+# Remove temporary names
+del os
+del sys
+del module_root

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyutil",
-    version="0.2.11",
+    version="0.2.12",
     author="Pengyu Nie",
     author_email="prodigy.sov@gmail.com",
     description="Python utilities",
@@ -19,4 +19,5 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
     ),
     install_requires=["numpy", "PyYAML", "PyGitHub", "unidiff"],
+    data_files=[("config", ["pyutil_config.json"]),]
 )

@@ -1,23 +1,34 @@
+from pathlib import Path
 import os
+import sys
 import yaml
 from typing import *
 
 
 class Macros:
-    HOME_DIR = os.getenv("HOME")
-    THIS_DIR = os.path.dirname(os.path.realpath(__file__))
-    PROJ_DIR = os.path.dirname(THIS_DIR)
-    CONFIG_FILE = os.path.join(HOME_DIR, "pyutil_config.json")
+    THIS_DIR: Path = Path(os.path.dirname(os.path.realpath(__file__)))
+    SYS_DIR: Path = Path(sys.prefix)
+    DEFAULT_CONFIG_FILE: Path = SYS_DIR / "config" / "pyutil_config.json"
 
+    if os.getenv("HOME") is not None:
+        HOME_DIR: Path = Path.home()
+        CONFIG_FILE: Path = HOME_DIR / ".pyutil"
+    else:
+        CONFIG_FILE: Path = DEFAULT_CONFIG_FILE
+    # end if
 
-def get_config(key: str) -> any:
+def get_config(key: str,
+               config_file: Path = Macros.CONFIG_FILE,
+               is_use_default: bool = True) -> any:
     try:
-        with open(Macros.CONFIG_FILE, "r") as f:
+        with open(str(config_file), "r") as f:
             configs = yaml.load(f)
             return configs[key]
         # end with
-    except KeyError as e:
-        raise KeyError("Config {} not available in the config file: {}".format(key, str(e)))
-    except FileNotFoundError as e:
-        return None
-    # end try except
+    except (KeyError, FileNotFoundError) as e:
+        if is_use_default and config_file != Macros.DEFAULT_CONFIG_FILE:
+            return get_config(key, Macros.DEFAULT_CONFIG_FILE, False)
+        else:
+            raise e
+        # end if
+    # end try
