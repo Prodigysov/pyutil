@@ -1,6 +1,8 @@
 import argparse
 from typing import *
 
+from .LoggingUtils import LoggingUtils
+
 
 class Option:
     def __init__(self):
@@ -89,6 +91,9 @@ def main(argv, actions: Dict[str, Callable], normalize_options: Callable[[Dict],
     :param actions: The mapping from action name to action function.
     :param normalize_options: Optional function to normalize options, by default identical function.
     """
+    logger = LoggingUtils.get_logger("CliUtils.main")
+    logger.info("Starting")
+
     if normalize_options is None:
         normalize_options = lambda opts: opts
 
@@ -113,5 +118,7 @@ def main(argv, actions: Dict[str, Callable], normalize_options: Callable[[Dict],
     else:
         print("No such action {}".format(action))
         print("Available actions: {}".format(list(actions.keys())))
+    # end if
 
+    logger.info("Terminating")
     return
