@@ -11,6 +11,7 @@ from github.Repository import Repository
 
 from . import _config
 from .LoggingUtils import LoggingUtils
+from .BashUtils import BashUtils
 
 
 class GitHubUtils:
@@ -259,3 +260,12 @@ class GitHubUtils:
         finally:
             cls.logger.warning("Got {}/{} repos.".format(len(names_repos), max_num_repos))
             return list(names_repos.values())
+
+    @classmethod
+    def is_url_valid_git_repo(cls, url: str) -> bool:
+        test_command = f"git ls-remote {url}"
+        return_code = BashUtils.run(test_command, is_get_return_code=True, is_get_stdout=False)
+        if return_code == 0:
+            return True
+        else:
+            return False
