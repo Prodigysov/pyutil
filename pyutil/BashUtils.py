@@ -9,10 +9,15 @@ class BashUtils:
     """
 
     @classmethod
-    def run(cls, cmd: str, is_get_return_code=False, is_get_stdout=True, is_get_stderr=False) -> Any:
+    def run(cls, cmd: str,
+            expected_return_code: int = None,
+            is_get_return_code: bool = False,
+            is_get_stdout: bool = True,
+            is_get_stderr: bool = False) -> Any:
         """
         Runs a Bash command and returns the stdout.
         :param cmd: the command to run.
+        :param expected_return_code: if set to an int, will raise exception if the return code mismatch.
         :param is_get_return_code: if get the return code.
         :param is_get_stdout: if get the stdout content.
         :param is_get_stderr: if get the stderr content.
@@ -20,6 +25,11 @@ class BashUtils:
         :return: stdout.
         """
         completed_process = subprocess.run(["bash", "-c", cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        if expected_return_code is not None:
+            if completed_process.returncode != expected_return_code:
+                raise RuntimeError(f"Expected {expected_return_code} but returned {completed_process.returncode}; While executing bash command '{cmd}'.")
+        # end if, if
 
         return_values = []
         if is_get_return_code:
