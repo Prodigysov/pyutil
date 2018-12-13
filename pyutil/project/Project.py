@@ -73,7 +73,7 @@ class Project:
 
     @property
     def default_branch(self):
-        return self.data["default_branch"]
+        return self.data.get("default_branch", "HEAD")
 
     @property
     def logger_prefix(self):
