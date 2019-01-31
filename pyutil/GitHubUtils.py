@@ -226,9 +226,9 @@ class GitHubUtils:
             if strategy in strategies:
                 cls.logger.info("Using strategy {}".format(strategy))
                 s_users = set()
-                s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="repositories", max_retry_times=max_retry_times)])
+                # s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="repositories", max_retry_times=max_retry_times)])
                 s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="followers", max_retry_times=max_retry_times)])
-                s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="joined", max_retry_times=max_retry_times)])
+                # s_users = s_users.union([u.login for u in cls.search_users("language:{}".format(language), sort="joined", max_retry_times=max_retry_times)])
                 users_count = 0
                 total_users_count = len(s_users)
                 for user in s_users:
@@ -242,7 +242,7 @@ class GitHubUtils:
                         names_repos[repo.full_name] = repo
                     # end for
                     users_count += 1
-                    cls.logger.warning("Progress {}/{} repos, {}/{} users.".format(len(names_repos), max_num_repos, users_count, total_users_count))
+                    cls.logger.debug("Progress {}/{} repos, {}/{} users.".format(len(names_repos), max_num_repos, users_count, total_users_count))
                     if len(names_repos) >= max_num_repos:
                         return list(names_repos.values())
                     # end if
