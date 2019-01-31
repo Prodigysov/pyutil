@@ -136,7 +136,7 @@ class GitHubUtils:
         # end while
 
         if num_repos < max_num_repos:
-            cls.logger.warning("Got {}/{} repos".format(num_repos, max_num_repos))
+            cls.logger.info("Got {}/{} repos".format(num_repos, max_num_repos))
         else:
             cls.logger.info("Got {}/{} repos".format(num_repos, max_num_repos))
         # end if
